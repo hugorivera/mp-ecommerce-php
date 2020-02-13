@@ -1,4 +1,44 @@
 <!DOCTYPE html>
+<?php 
+require __DIR__ .  '/vendor/autoload.php';
+
+    MercadoPago\SDK::setAccessToken('APP_USR-6718728269189792-112017-dc8b338195215145a4ec035fdde5cedf-491494389');
+    $preference = new MercadoPago\Preference();
+    $payer = new MercadoPago\Payer();
+    $item = new MercadoPago\Item();
+    
+    $item->id = "1234";
+    $item->title = $_POST['title'];
+    $item->quantity =$_POST['unit'] ;
+    $item->unit_price = $_POST['price'];
+    $item->currency_id = "MXN";
+    $item->description = "Dispositivo móvil de Tienda e-commerce";
+    $item->picture_url = $_POST['img'];
+    
+    $payer->email = "test_user_98623993@testuser.com";
+    $payer->name = "Lalo Landa";
+    $payer->phone = array("area_code" => "55", "number" => "49737300");
+    $payer->address = array("zip_code" => "03940", "street_name" => "Insurgentes Sur", "street_number" => "1602");
+
+    $preference->payment_methods = array(
+        "excluded_payment_types" => array(
+            array("id"=>"atm")
+        ),
+        "excluded_payment_methods" => array(
+            array("id" => "amex")
+          ),
+        "installments" => 6
+      );
+    $preference->items = array($item);
+    $preference->external_reference = "ABCD1234";
+    $preference->payer = $payer;
+    $preference->back_urls =  array (
+        "success"=> 'http://localhost/mp-ecommerce-php/index.php',
+        "failure"=> 'http://localhost/mp-ecommerce-php/failure.php'
+    );
+
+    $preference->save();
+?>
 <html
     class="supports-animation supports-columns svg no-touch no-ie no-oldie no-ios supports-backdrop-filter as-mouseuser"
     lang="en-US">
@@ -22,6 +62,18 @@
     <link rel="stylesheet" href="./assets/merch-tools.css" media="screen, print">
 
     <link rel="stylesheet" href="./assets/fonts" media="">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous">
+    </script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
+    </script>
     <style>
         .as-filter-button-text {
             font-size: 26px;
@@ -42,6 +94,7 @@
             color: #fff;
             padding: 16px 40px;
         }
+
         .fixedbutton {
             position: fixed;
             bottom: 0px;
@@ -502,78 +555,52 @@
                                             Smartphones
                                         </h2>
                                     </button>
-
-
                                 </div>
-
                             </div>
                         </div>
-                        <div class="as-accessories-results  as-search-desktop">
-                            <div class="width:60%">
-                                <div class="as-producttile-tilehero with-paddlenav " style="float:left;">
-                                    <div class="as-dummy-container as-dummy-img">
 
-                                        <img src="./assets/wireless-headphones"
-                                            class="ir ir item-image as-producttile-image  "
-                                            style="max-width: 70%;max-height: 70%;" alt="" width="445" height="445">
-                                    </div>
-                                    <div class="images mini-gallery gal5 ">
-
-
-                                        <div class="as-isdesktop with-paddlenav with-paddlenav-onhover">
-                                            <div class="clearfix image-list xs-no-js as-util-relatedlink relatedlink"
-                                                data-relatedlink="6|Powerbeats3 Wireless Earphones - Neighborhood Collection - Brick Red|MPXP2">
-                                                <div class="as-tilegallery-element as-image-selected">
-                                                    <div class=""></div>
-                                                    <img src="./assets/003.jpg"
-                                                        class="ir ir item-image as-producttile-image" alt="" width="445"
-                                                        height="445"
-                                                        style="content:-webkit-image-set(url(<?php echo $_POST['img'] ?>) 2x);">
-                                                </div>
-
+                        <div class="as-accessories-results as-search-desktop">
+                            <div class="container">
+                                <div class="row"> <br> </div>
+                                <div class="row justify-content-md-center">
+                                    <div class="col-4">
+                                        <div class="card as-producttile-tilehero with-paddlenav " style="float:left;">
+                                            <img class="card-img-top" src="<?php echo $_POST['img'] ?>"
+                                                alt="Card image cap">
+                                            <div class="card-body">
+                                                <h5 class="card-title"><?php echo $_POST['title'] ?></h5>
+                                                <p class="card-text"><?php echo  "" . $_POST['unit'] ?>
+                                                    <?php echo  ' X  $' . $_POST['price']  ?> </p>
+                                                <a href="#">
+                                                    <form action="<?php echo $preference->back_urls->success; ?>" method="POST">
+                                                        <script
+                                                            src="https://www.mercadopago.com.mx/integrations/v1/web-payment-checkout.js"
+                                                            data-preference-id="<?php echo $preference->id; ?>"
+                                                            data-header-color="#2D3277"
+                                                            data-button-label="Pagar la compra">
+                                                        </script>
+                                                    </form>
+                                                </a>
                                             </div>
-
-
                                         </div>
-
-
-
                                     </div>
-
                                 </div>
-                                <div class="as-producttile-info" style="float:left;min-height: 168px;">
-                                    <div class="as-producttile-titlepricewraper" style="min-height: 128px;">
-                                        <div class="as-producttile-title">
-                                            <h3 class="as-producttile-name">
-                                                <p class="as-producttile-tilelink">
-                                                    <span data-ase-truncate="2"><?php echo $_POST['title'] ?></span>
-                                                </p>
-
-                                            </h3>
-                                        </div>
-                                        <h3>
-                                            <?php echo $_POST['price'] ?>
-                                        </h3>
-                                        <h3>
-                                            <?php echo "$" . $_POST['unit'] ?>
-                                        </h3>
-                                    </div>
-                                    <button type="submit" class="mercadopago-button" formmethod="post">Pagar</button>
-                                </div>
+                                <div class="row"> <br> </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div role="alert" class="as-loader-text ally" aria-live="assertive"></div>
-        <div class="as-footnotes fixedbutton">
-            <div class="as-footnotes-content">
-                <div class="as-footnotes-sosumi">
-                    Todos los derechos reservados Tienda Tecno 2020
-                </div>
+    </div>
+    <div role="alert" class="as-loader-text ally" aria-live="assertive"></div>
+    <div class="as-footnotes fixedbutton">
+        <div class="as-footnotes-content">
+            <div class="as-footnotes-sosumi">
+                Todos los derechos reservados Tienda e-commerce
             </div>
         </div>
+    </div>
 
     </div>
     <div class="mp-mercadopago-checkout-wrapper"
