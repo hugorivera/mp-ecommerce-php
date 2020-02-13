@@ -33,8 +33,8 @@ require __DIR__ .  '/vendor/autoload.php';
     $preference->external_reference = "ABCD1234";
     $preference->payer = $payer;
     $preference->back_urls =  array (
-        "success"=> 'http://localhost/mp-ecommerce-php/index.php',
-        "failure"=> 'http://localhost/mp-ecommerce-php/failure.php'
+        "success"=> 'https://hugorivera-mp-commerce-php.herokuapp.com/failure.php',
+        "failure"=> 'https://hugorivera-mp-commerce-php.herokuapp.com/failure.php'
     );
 
     $preference->save();
